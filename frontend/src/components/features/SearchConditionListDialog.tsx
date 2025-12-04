@@ -110,7 +110,6 @@ export const SearchConditionListDialog = ({
           名: user.firstName,
           権限: roleLabelMap[user.role],
           性別: user.gender ? genderLabelMap[user.gender] : '-',
-          部署: user.departmentName || '-',
         }));
 
         const csvContent = convertToCSV({

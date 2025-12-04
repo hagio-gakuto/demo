@@ -13,6 +13,7 @@ type UpdateUserParams = {
   firstName: string;
   lastName: string;
   gender: Gender | null;
+  userId: string;
 };
 
 @Injectable()
@@ -23,16 +24,15 @@ export class UpdateUserUseCase {
   ) {}
 
   async execute(params: UpdateUserParams): Promise<UserResponseDto> {
-    const systemUserId = 'system';
     const existing = await this.usersRepository.findById(params.id);
     if (!existing || existing.deletedAt) {
       throw new NotFoundError('ユーザー', params.id);
     }
 
-    existing.changeEmail(params.email, systemUserId);
-    existing.changeRole(params.role, systemUserId);
-    existing.changeName(params.firstName, params.lastName, systemUserId);
-    existing.changeGender(params.gender, systemUserId);
+    existing.changeEmail(params.email, params.userId);
+    existing.changeRole(params.role, params.userId);
+    existing.changeName(params.firstName, params.lastName, params.userId);
+    existing.changeGender(params.gender, params.userId);
 
     try {
       const updated = await this.usersRepository.update(existing);

@@ -46,8 +46,14 @@ export class AuthMiddleware implements NestMiddleware {
     // 現時点では、トークンが存在することを確認するのみ
     // 将来的にJWT検証などを追加
 
-    // リクエストオブジェクトにトークンを保存（必要に応じて）
-    (req as Request & { user?: { token: string } }).user = { token };
+    // 仮想認証: リクエストヘッダーからユーザーIDを取得、なければ固定値を使用
+    const userId = (req.headers['x-user-id'] as string) || 'system';
+
+    // リクエストオブジェクトにユーザー情報を保存
+    (req as Request & { user?: { id: string; token: string } }).user = {
+      id: userId,
+      token,
+    };
 
     next();
   }

@@ -36,7 +36,7 @@ export class SearchConditionsRepository implements ISearchConditionsRepository {
 
   async findById(id: string): Promise<SearchConditionEntity | null> {
     const row = await this.prisma.searchCondition.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
     });
     if (!row) return null;
     return this.toEntity(row);
@@ -107,14 +107,27 @@ export class SearchConditionsRepository implements ISearchConditionsRepository {
   }
 
   async delete(id: string, deletedBy: string, deletedAt: Date): Promise<void> {
-    await this.prisma.searchCondition.update({
-      where: { id },
-      data: {
-        deletedAt,
-        deletedBy,
-        updatedBy: deletedBy,
-      },
-    });
+    try {
+      await this.prisma.searchCondition.update({
+        where: { id },
+        data: {
+          deletedAt,
+          deletedBy,
+          updatedBy: deletedBy,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        undefined,
+        'SearchConditionsRepository',
+      );
+      handlePrismaError(error, {
+        resourceName: '検索条件',
+        id,
+      });
+      throw error;
+    }
   }
 
   private toEntity(row: SearchCondition): SearchConditionEntity {

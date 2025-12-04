@@ -18,7 +18,7 @@ export const HelpTooltip = ({
   children,
   position = 'bottom',
 }: HelpTooltipProps) => {
-  const { isMaster } = useAuth();
+  const { isAdmin } = useAuth();
 
   const positionStyles = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -45,21 +45,21 @@ export const HelpTooltip = ({
       ></div>
       <div className="bg-gray-800 text-white text-xs p-3 rounded shadow-lg text-left leading-relaxed whitespace-pre-line">
         {message}
-        {linkText && (
-          <div className="mt-1">
-            {linkHref && isMaster() ? (
-              <Link
-                href={linkHref}
-                className="text-blue-300 hover:text-blue-100 underline"
-              >
-                {linkText}
-              </Link>
-            ) : (
-              <span className="font-semibold text-gray-300">{linkText}</span>
+            {linkText && (
+              <div className="mt-1">
+                {linkHref && isAdmin() ? (
+                  <Link
+                    href={linkHref}
+                    className="text-blue-300 hover:text-blue-100 underline"
+                  >
+                    {linkText}
+                  </Link>
+                ) : (
+                  <span className="font-semibold text-gray-300">{linkText}</span>
+                )}
+                <span> をしてください</span>
+              </div>
             )}
-            <span> をしてください</span>
-          </div>
-        )}
       </div>
     </div>
   );

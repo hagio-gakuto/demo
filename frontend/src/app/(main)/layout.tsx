@@ -7,4 +7,3 @@ export default function MainLayout({
 }) {
   return <Providers>{children}</Providers>;
 }
-

@@ -13,7 +13,6 @@ type UseUserCsvUploadParams = {
 };
 
 export const useUserCsvUpload = ({ fetchUsers }: UseUserCsvUploadParams) => {
-
   const validateFileType = (file: File): void => {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (fileExtension !== 'csv') {

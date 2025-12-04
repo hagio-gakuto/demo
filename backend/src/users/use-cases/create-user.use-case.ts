@@ -12,6 +12,7 @@ type CreateUserParams = {
   firstName: string;
   lastName: string;
   gender: Gender | null;
+  userId: string;
 };
 
 @Injectable()
@@ -22,14 +23,13 @@ export class CreateUserUseCase {
   ) {}
 
   async execute(params: CreateUserParams): Promise<UserResponseDto> {
-    const systemUserId = 'system';
     const entity = UserEntity.createNew({
       email: params.email,
       role: params.role,
       firstName: params.firstName,
       lastName: params.lastName,
       gender: params.gender,
-      userId: systemUserId,
+      userId: params.userId,
     });
     try {
       const created = await this.usersRepository.create(entity);

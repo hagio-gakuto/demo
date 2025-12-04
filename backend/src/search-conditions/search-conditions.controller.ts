@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { FindAllSearchConditionsUseCase } from './use-cases/find-all-search-conditions.use-case';
 import { CreateSearchConditionUseCase } from './use-cases/create-search-condition.use-case';
 import { UpdateSearchConditionUseCase } from './use-cases/update-search-condition.use-case';
@@ -41,38 +42,40 @@ export class SearchConditionsController {
 
   @Post()
   async create(
+    @CurrentUser() userId: string,
     @Body(new ZodValidationPipe(createSearchConditionRequestSchema))
     dto: CreateSearchConditionRequestDto,
   ): Promise<SearchConditionResponseDto> {
-    const systemUserId = 'system';
     return this.createSearchConditionUseCase.execute({
       formType: dto.formType,
       name: dto.name,
       urlParams: dto.urlParams,
-      userId: systemUserId,
+      userId,
     });
   }
 
   @Put(':id')
   async update(
+    @CurrentUser() userId: string,
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateSearchConditionRequestSchema))
     dto: UpdateSearchConditionRequestDto,
   ): Promise<SearchConditionResponseDto> {
-    const systemUserId = 'system';
     return this.updateSearchConditionUseCase.execute({
       id,
       name: dto.name,
-      userId: systemUserId,
+      userId,
     });
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
-    const systemUserId = 'system';
+  async delete(
+    @CurrentUser() userId: string,
+    @Param('id') id: string,
+  ): Promise<void> {
     return this.deleteSearchConditionUseCase.execute({
       id,
-      userId: systemUserId,
+      userId,
     });
   }
 }

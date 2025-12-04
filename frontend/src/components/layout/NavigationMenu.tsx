@@ -23,11 +23,9 @@ export const NavigationMenu = () => {
   const visibleRoles: UserRole[] = [];
   const userLinks = getLinksForRole('user');
   const adminLinks = getLinksForRole('admin');
-  const masterLinks = getLinksForRole('master');
 
   if (hasRole('user') && userLinks.length > 0) visibleRoles.push('user');
   if (hasRole('admin') && adminLinks.length > 0) visibleRoles.push('admin');
-  if (hasRole('master') && masterLinks.length > 0) visibleRoles.push('master');
 
   return (
     <nav className="flex items-center px-4">

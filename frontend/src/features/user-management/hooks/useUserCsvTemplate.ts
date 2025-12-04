@@ -12,7 +12,6 @@ import { extractErrorMessage } from '@/libs/error-handler';
 import toast from 'react-hot-toast';
 
 export const useUserCsvTemplate = () => {
-
   const fetchAllUsers = useCallback(async (): Promise<UserResponseDto[]> => {
     try {
       // /users/exportエンドポイントで全ユーザーを取得

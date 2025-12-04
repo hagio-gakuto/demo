@@ -11,11 +11,7 @@ import {
   CancelIcon,
   SaveIcon,
 } from '@/components/ui';
-import {
-  TextField,
-  SelectField,
-  FormError,
-} from '@/components/form';
+import { TextField, SelectField, FormError } from '@/components/form';
 import { roleOptions, genderOptions } from '../../constants/user.constants';
 import { useUserForm } from '../../hooks/useUserForm';
 import type { UserRole, Gender } from '@/types/user';

@@ -52,7 +52,6 @@ export const EditUserForm = ({
     }
   });
 
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit} noValidate className="space-y-6">

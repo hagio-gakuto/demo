@@ -49,6 +49,7 @@ export const useUserManagementDialogs = ({
 
   const handleCsvExport = async () => {
     try {
+      setError(null);
       await handleExportCSV();
     } catch (err) {
       setError(

@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import type { Gender, UserRole } from '@prisma/client';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 import { FindUserUseCase } from './use-cases/find-user.use-case';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
@@ -92,6 +93,7 @@ export class UsersController {
 
   @Post()
   async create(
+    @CurrentUser() userId: string,
     @Body(new ZodValidationPipe(createUserRequestSchema))
     dto: CreateUserRequestDto,
   ): Promise<UserResponseDto> {
@@ -101,11 +103,13 @@ export class UsersController {
       firstName: dto.firstName,
       lastName: dto.lastName,
       gender: (dto.gender ?? null) as Gender | null,
+      userId,
     });
   }
 
   @Put(':id')
   async update(
+    @CurrentUser() userId: string,
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateUserRequestSchema))
     dto: UpdateUserRequestDto,
@@ -117,11 +121,15 @@ export class UsersController {
       firstName: dto.firstName,
       lastName: dto.lastName,
       gender: (dto.gender ?? null) as Gender | null,
+      userId,
     });
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.deleteUserUseCase.execute(id);
+  async delete(
+    @CurrentUser() userId: string,
+    @Param('id') id: string,
+  ): Promise<UserResponseDto> {
+    return this.deleteUserUseCase.execute(id, userId);
   }
 }
