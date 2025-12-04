@@ -11,8 +11,8 @@ export default function AdminUserManagementPage() {
 
   useEffect(() => {
     setItems([{ label: 'ホーム', href: '/' }, { label: 'ユーザー管理' }]);
-  }, [setItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <UserManagement />;
 }
-

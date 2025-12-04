@@ -16,7 +16,7 @@ export const CreateUserDialog = ({
 }: CreateUserDialogProps) => {
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="ユーザー新規登録">
-      <CreateUserForm onSubmit={onSubmit} onCancel={onClose} />
+      {isOpen && <CreateUserForm onSubmit={onSubmit} onCancel={onClose} />}
     </Dialog>
   );
 };

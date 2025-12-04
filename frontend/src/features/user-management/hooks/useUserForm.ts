@@ -18,6 +18,14 @@ type UseUserFormParams = {
   userId: string | undefined;
 };
 
+const EMPTY_USER_FORM_DATA: UserFormData = {
+  email: '',
+  role: 'user',
+  firstName: '',
+  lastName: '',
+  gender: '',
+};
+
 export const useUserForm = ({ userId }: UseUserFormParams) => {
   const isEdit = userId && userId !== 'new';
   const [isLoading, setIsLoading] = useState(isEdit);
@@ -95,25 +103,19 @@ export const useUserForm = ({ userId }: UseUserFormParams) => {
     // ダイアログを閉じるだけ（何もしない）
   }, []);
 
-  const defaultValues: UserFormData = useMemo(
-    () =>
-      user
-        ? {
-            email: user.email,
-            role: user.role,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            gender: user.gender || '',
-          }
-        : {
-            email: '',
-            role: 'user',
-            firstName: '',
-            lastName: '',
-            gender: '',
-          },
-    [user],
-  );
+  const defaultValues: UserFormData = useMemo(() => {
+    if (user) {
+      return {
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        gender: user.gender || '',
+      };
+    }
+    // 新規作成時は常に同じ値なので、定数として返す
+    return EMPTY_USER_FORM_DATA;
+  }, [user]);
 
   return {
     isLoading,

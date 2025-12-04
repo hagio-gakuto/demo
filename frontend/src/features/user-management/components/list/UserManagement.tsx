@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   Title,
   PageContainer,
@@ -13,8 +12,7 @@ import {
 } from '@/components/ui';
 import { SaveSearchConditionButton } from '@/components/features';
 import { useUserManagement } from '../../hooks/useUserManagement';
-import { useSearchCondition } from '../../hooks/useSearchCondition';
-import { errorMessages } from '@/constants/error-messages';
+import { useUserManagementDialogs } from '../../hooks/useUserManagementDialogs';
 import { UserSearchForm } from './UserSearchForm';
 import { FormError } from '@/components/form';
 import { UserTable } from './UserTable';
@@ -39,33 +37,33 @@ export const UserManagement = () => {
     fetchUsers,
   } = useUserManagement();
 
-  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [isSaveConditionDialogOpen, setIsSaveConditionDialogOpen] =
-    useState(false);
-  const [isSearchConditionListDialogOpen, setIsSearchConditionListDialogOpen] =
-    useState(false);
-
   const {
+    isBulkDialogOpen,
+    setIsBulkDialogOpen,
+    isCreateDialogOpen,
+    setIsCreateDialogOpen,
+    editingUserId,
+    setEditingUserId,
+    isSaveConditionDialogOpen,
+    setIsSaveConditionDialogOpen,
+    isSearchConditionListDialogOpen,
+    setIsSearchConditionListDialogOpen,
+    hasSearchConditions,
     filteredConditions,
-    isLoading: isSearchConditionLoading,
-    fetchSavedConditions,
+    isSearchConditionLoading,
     searchConditions,
     saveCondition,
     deleteCondition,
     applyCondition,
-  } = useSearchCondition();
-
-  useEffect(() => {
-    void fetchSavedConditions();
-  }, [fetchSavedConditions]);
-
-  const hasSearchConditions =
-    !!searchParams.id ||
-    !!searchParams.search ||
-    !!searchParams.role ||
-    !!searchParams.gender;
+    handleCsvExport,
+    handleCreateUserSuccess,
+    handleEditUserSuccess,
+  } = useUserManagementDialogs({
+    searchParams,
+    fetchUsers,
+    handleExportCSV,
+    setError,
+  });
 
   if (isLoading) {
     return (
@@ -101,6 +99,7 @@ export const UserManagement = () => {
 
       <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
         <UserSearchForm
+          key={JSON.stringify(searchParams)}
           onSearch={handleSearch}
           onReset={handleReset}
           searchParams={searchParams}
@@ -121,20 +120,7 @@ export const UserManagement = () => {
             </Button>
           </div>
           <div className="flex gap-2">
-            <CsvExportButton
-              onExport={async () => {
-                try {
-                  await handleExportCSV();
-                } catch (err) {
-                  setError(
-                    err instanceof Error
-                      ? err.message
-                      : errorMessages.csvExportFailed,
-                  );
-                }
-              }}
-              variant="outline"
-            >
+            <CsvExportButton onExport={handleCsvExport} variant="outline">
               CSV出力
             </CsvExportButton>
           </div>
@@ -160,16 +146,10 @@ export const UserManagement = () => {
         onBulkError={setError}
         isCreateDialogOpen={isCreateDialogOpen}
         onCloseCreateDialog={() => setIsCreateDialogOpen(false)}
-        onCreateUserSuccess={async () => {
-          setIsCreateDialogOpen(false);
-          await fetchUsers();
-        }}
+        onCreateUserSuccess={handleCreateUserSuccess}
         editingUserId={editingUserId}
         onCloseEditDialog={() => setEditingUserId(null)}
-        onEditUserSuccess={async () => {
-          setEditingUserId(null);
-          await fetchUsers();
-        }}
+        onEditUserSuccess={handleEditUserSuccess}
         isSaveConditionDialogOpen={isSaveConditionDialogOpen}
         onCloseSaveConditionDialog={() => setIsSaveConditionDialogOpen(false)}
         onSaveCondition={saveCondition}

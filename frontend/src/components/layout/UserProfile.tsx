@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
+import { CustomLink } from '@/components/ui';
 import { useUser } from '@/contexts/UserContext';
 import { DefaultUserIcon } from '@/components/ui/icons';
 
@@ -13,7 +13,7 @@ export const UserProfile = () => {
   }
 
   return (
-    <Link
+    <CustomLink
       href="/mypage"
       className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-col"
     >
@@ -40,6 +40,6 @@ export const UserProfile = () => {
         )}
       </div>
       <span className="text-sm">{user.name}</span>
-    </Link>
+    </CustomLink>
   );
 };

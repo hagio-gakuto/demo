@@ -13,7 +13,6 @@ type UserFormData = {
   firstName: string;
   lastName: string;
   gender: Gender | '';
-  departmentId: string;
 };
 
 type UseUserDetailParams = {
@@ -51,7 +50,6 @@ export const useUserDetail = ({ userId }: UseUserDetailParams) => {
           firstName: data.firstName,
           lastName: data.lastName,
           gender: data.gender || null,
-          departmentId: data.departmentId,
         },
       });
       // 更新後はSWRのキャッシュを再検証

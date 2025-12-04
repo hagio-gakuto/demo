@@ -18,7 +18,7 @@ export type UserProps = {
 };
 
 export class UserEntity {
-  private constructor(private props: UserProps) {}
+  private constructor(private readonly props: UserProps) {}
 
   static createNew(params: {
     email: string;

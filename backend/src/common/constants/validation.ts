@@ -10,20 +10,26 @@
 export const REQUIRED_FIELD = (fieldName: string): string =>
   `${fieldName}は必須です`;
 
-export const INVALID = {
-  RECRUIT_YEAR_ID: '年度IDは正の整数である必要があります',
-  PAGE: 'pageは1以上の整数である必要があります',
-  PAGE_SIZE: 'pageSizeは1以上の整数である必要があります',
-  ROLE: '権限はuser、admin、masterのいずれかである必要があります',
-  EMAIL_FORMAT: 'メールアドレスの形式が正しくありません',
-  URL_FORMAT: 'WEBサイトURLの形式が正しくありません',
-  THEME_COLOR: 'テーマカラーは#RRGGBB形式で入力してください',
+/**
+ * バリデーションメッセージ定数
+ */
+export const VALIDATION_MESSAGES = {
+  REQUIRED: {
+    FORM_TYPE: 'フォームタイプは必須です',
+    NAME: '名前は必須です',
+    URL_PARAMS: 'URLパラメータは必須です',
+    EMAIL: 'メールアドレスは必須です',
+    ROLE: '権限は必須です',
+    FIRST_NAME: '名は必須です',
+    LAST_NAME: '姓は必須です',
+  },
 } as const;
 
-export const MIN_LENGTH = {
-  USERS: 'ユーザーは1件以上必要です',
-  INTERVIEWERS: '面接官が1件以上必要です',
-  EVENTS: 'イベントは1件以上必要です',
+export const INVALID = {
+  PAGE: 'pageは1以上の整数である必要があります',
+  PAGE_SIZE: 'pageSizeは1以上の整数である必要があります',
+  ROLE: '権限はuser、adminのいずれかである必要があります',
+  EMAIL_FORMAT: 'メールアドレスの形式が正しくありません',
 } as const;
 
 /**

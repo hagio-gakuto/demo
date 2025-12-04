@@ -18,4 +18,3 @@ export const isValidGender = (gender: string | null): gender is Gender => {
   if (!gender) return false;
   return GENDERS.includes(gender as Gender);
 };
-
