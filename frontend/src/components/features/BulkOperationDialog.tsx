@@ -65,9 +65,6 @@ export const BulkOperationDialog = ({
       }
     >
       <div className="space-y-6">
-        <div className="text-sm text-gray-600">
-          CSVファイルを使用して、データを一括で登録・編集できます。
-        </div>
 
         <div className="space-y-4">
           {/* 一括登録セクション */}

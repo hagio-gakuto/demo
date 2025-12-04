@@ -32,6 +32,10 @@ import {
   type SearchUserRequestDto,
   searchUserRequestSchema,
 } from './dto/search-user-request.dto';
+import {
+  paginationQuerySchema,
+  type PaginationQueryDto,
+} from './dto/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -47,29 +51,31 @@ export class UsersController {
 
   @Get()
   async findAll(
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
+    @Query(new ZodValidationPipe(paginationQuerySchema))
+    query: PaginationQueryDto,
   ): Promise<UserListResponseDto> {
     return this.findAllUsersUseCase.execute({
-      page: page ? Number(page) : undefined,
-      pageSize: pageSize ? Number(pageSize) : undefined,
+      page: query.page,
+      pageSize: query.pageSize,
     });
   }
 
   @Get('search/detail')
   async search(
-    @Query(new ZodValidationPipe(searchUserRequestSchema))
-    query: SearchUserRequestDto,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
+    @Query(
+      new ZodValidationPipe(
+        searchUserRequestSchema.merge(paginationQuerySchema),
+      ),
+    )
+    query: SearchUserRequestDto & PaginationQueryDto,
   ): Promise<UserListResponseDto> {
     return this.searchUsersUseCase.execute({
       id: query.id ?? undefined,
       search: query.search ?? undefined,
       role: query.role as UserRole | undefined,
       gender: query.gender as Gender | null | undefined,
-      page: page ? Number(page) : undefined,
-      pageSize: pageSize ? Number(pageSize) : undefined,
+      page: query.page,
+      pageSize: query.pageSize,
     });
   }
 
