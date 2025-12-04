@@ -10,12 +10,27 @@ export async function seedUsers({ prisma }: { prisma: PrismaClient }) {
   // 既存のデータを削除
   await prisma.user.deleteMany();
 
-  const systemUserId = ulid();
+  const systemUserId = 'system';
 
-  // 管理者ユーザーを作成
+  // systemユーザーを作成（システム用）
   await prisma.user.create({
     data: {
       id: systemUserId,
+      email: 'system@example.com',
+      role: UserRole.admin,
+      firstName: 'System',
+      lastName: 'User',
+      gender: Gender.other,
+      createdBy: systemUserId,
+      updatedBy: systemUserId,
+    },
+  });
+
+  // 管理者ユーザーを作成
+  const adminUserId = ulid();
+  await prisma.user.create({
+    data: {
+      id: adminUserId,
       email: 'admin@example.com',
       role: UserRole.admin,
       firstName: 'Admin',
@@ -175,6 +190,7 @@ export async function seedUsers({ prisma }: { prisma: PrismaClient }) {
     data: userData,
   });
 
+  console.log(`1 件の System User 作成完了`);
   console.log(`1 件の Admin User 作成完了`);
   console.log(`${users.count} 件の User 作成完了`);
 }

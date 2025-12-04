@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { CustomLink } from '@/components/ui';
 import { usePathname } from 'next/navigation';
 
 type NavigationLink = {
@@ -20,7 +20,7 @@ export const NavigationLinks = ({ links }: NavigationLinksProps) => {
       {links.map((link) => {
         const isActive = pathname === link.href;
         return (
-          <Link
+          <CustomLink
             key={link.href}
             href={link.href}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors border ${
@@ -30,7 +30,7 @@ export const NavigationLinks = ({ links }: NavigationLinksProps) => {
             }`}
           >
             {link.label}
-          </Link>
+          </CustomLink>
         );
       })}
     </nav>

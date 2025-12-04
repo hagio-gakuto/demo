@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { CustomLink } from '@/components/ui';
 
 export default function NotFound() {
   return (
@@ -18,12 +18,12 @@ export default function NotFound() {
         </div>
 
         <div className="flex justify-center">
-          <Link
+          <CustomLink
             href="/"
             className="block w-full max-w-xs bg-blue-600 text-white font-medium rounded-md px-4 py-2 text-base hover:bg-blue-700 transition-colors text-center"
           >
             ホームに戻る
-          </Link>
+          </CustomLink>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import { CustomLink } from '@/components/ui';
 import { Button, PageContainer } from '@/components/ui';
-import Link from 'next/link';
 
 type ErrorPageProps = {
   readonly error: Error & { digest?: string };
@@ -41,11 +41,11 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           <Button onClick={reset} variant="primary" className="w-full max-w-xs">
             もう一度試す
           </Button>
-          <Link href="/" className="w-full max-w-xs">
+          <CustomLink href="/" className="w-full max-w-xs">
             <Button variant="outline" className="w-full">
               ホームに戻る
             </Button>
-          </Link>
+          </CustomLink>
         </div>
       </div>
     </PageContainer>

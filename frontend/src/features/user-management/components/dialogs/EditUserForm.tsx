@@ -55,31 +55,27 @@ export const EditUserForm = ({
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="block text-sm font-medium text-gray-700 mb-1">
-              ID
-            </div>
-            <p className="text-sm text-gray-900">{user.id}</p>
-          </div>
+        <div className="space-y-4">
           <TextField
             name="email"
             label="メールアドレス"
             placeholder="メールアドレスを入力（例: user@example.com）"
             rules={{ required: 'メールアドレスは必須です' }}
           />
-          <TextField
-            name="lastName"
-            label="姓"
-            placeholder="姓を入力"
-            rules={{ required: '姓は必須です' }}
-          />
-          <TextField
-            name="firstName"
-            label="名"
-            placeholder="名を入力"
-            rules={{ required: '名は必須です' }}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <TextField
+              name="lastName"
+              label="姓"
+              placeholder="姓を入力"
+              rules={{ required: '姓は必須です' }}
+            />
+            <TextField
+              name="firstName"
+              label="名"
+              placeholder="名を入力"
+              rules={{ required: '名は必須です' }}
+            />
+          </div>
           <SelectField
             name="role"
             label="権限"
@@ -89,7 +85,7 @@ export const EditUserForm = ({
           <SelectField name="gender" label="性別" options={genderOptions} />
         </div>
 
-        <div className="flex justify-end gap-2 mt-6">
+        <div className="flex gap-4 mt-6">
           <Button
             type="button"
             variant="outline"

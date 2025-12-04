@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { CustomLink } from '@/components/ui';
 import { Button, PageContainer } from '@/components/ui';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
@@ -26,11 +26,11 @@ export default function Unauthorized() {
         </div>
 
         <div className="flex flex-col gap-3 items-center">
-          <Link href="/" className="w-full max-w-xs">
+          <CustomLink href="/" className="w-full max-w-xs">
             <Button variant="primary" className="w-full">
               ホームに戻る
             </Button>
-          </Link>
+          </CustomLink>
         </div>
       </div>
     </PageContainer>

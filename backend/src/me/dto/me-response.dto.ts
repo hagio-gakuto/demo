@@ -1,8 +1,3 @@
-import type { UserRole } from '@prisma/client';
+import type { UserResponseDto } from '../../users/dto/user-response.dto';
 
-export type MeResponseDto = {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-};
+export type MeResponseDto = UserResponseDto;

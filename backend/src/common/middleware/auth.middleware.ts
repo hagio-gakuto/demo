@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { CustomLoggerService } from '../../config/custom-logger.service';
+import { SYSTEM_USER_ID } from '../constants/system';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -47,7 +48,7 @@ export class AuthMiddleware implements NestMiddleware {
     // 将来的にJWT検証などを追加
 
     // 仮想認証: リクエストヘッダーからユーザーIDを取得、なければ固定値を使用
-    const userId = (req.headers['x-user-id'] as string) || 'system';
+    const userId = (req.headers['x-user-id'] as string) || SYSTEM_USER_ID;
 
     // リクエストオブジェクトにユーザー情報を保存
     (req as Request & { user?: { id: string; token: string } }).user = {
