@@ -3,7 +3,7 @@ import type { MeResponseDto } from './dto/me-response.dto';
 
 @Injectable()
 export class MeService {
-  async getMe(): Promise<MeResponseDto> {
+  getMe(): MeResponseDto {
     // 固定のユーザー情報を返す（簡易な権限チェック用）
     return {
       id: 'admin',
@@ -13,5 +13,3 @@ export class MeService {
     };
   }
 }
-
-

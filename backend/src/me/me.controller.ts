@@ -7,9 +7,7 @@ export class MeController {
   constructor(private readonly meService: MeService) {}
 
   @Get()
-  async getMe(): Promise<MeResponseDto> {
+  getMe(): MeResponseDto {
     return this.meService.getMe();
   }
 }
-
-

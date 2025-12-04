@@ -6,5 +6,3 @@ export type MeResponseDto = {
   email: string;
   role: UserRole;
 };
-
-

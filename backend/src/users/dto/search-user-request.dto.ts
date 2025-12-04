@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { USER_ROLES, GENDERS } from '../../common/enums';
 
 export const searchUserRequestSchema = z.object({
-  email: z.string().email().optional(),
+  id: z.string().optional(),
+  search: z.string().optional(),
   role: z.enum(USER_ROLES).optional(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
   gender: z.enum(GENDERS).nullable().optional(),
 });
 

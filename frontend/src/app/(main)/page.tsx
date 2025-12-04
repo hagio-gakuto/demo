@@ -11,8 +11,8 @@ export default function Home() {
 
   useEffect(() => {
     setItems([{ label: 'ホーム', href: '/' }]);
-  }, [setItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <Dashboard />;
 }
-

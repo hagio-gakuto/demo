@@ -2,11 +2,7 @@
 
 import { useForm, FormProvider } from 'react-hook-form';
 import { Loading, Button, CancelIcon, SaveIcon } from '@/components/ui';
-import {
-  TextField,
-  SelectField,
-  FormError,
-} from '@/components/form';
+import { TextField, SelectField, FormError } from '@/components/form';
 import { roleOptions, genderOptions } from '../../constants/user.constants';
 import type { UserRole, Gender } from '@/types/user';
 import { useUserForm } from '../../hooks/useUserForm';

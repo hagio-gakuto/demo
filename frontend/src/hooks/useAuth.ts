@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import type { UserRole } from '@/types/user';
 
@@ -9,18 +10,24 @@ const roleHierarchy: Record<UserRole, number> = {
 export const useAuth = () => {
   const { user } = useUser();
 
-  const hasRole = (requiredRole: UserRole): boolean => {
-    if (!user) return false;
-    return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
-  };
+  const hasRole = useCallback(
+    (requiredRole: UserRole): boolean => {
+      if (!user) return false;
+      return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
+    },
+    [user],
+  );
 
-  const isAdmin = (): boolean => hasRole('admin');
-  const isUser = (): boolean => hasRole('user');
+  const isAdmin = useCallback((): boolean => hasRole('admin'), [hasRole]);
+  const isUser = useCallback((): boolean => hasRole('user'), [hasRole]);
 
-  return {
-    user,
-    hasRole,
-    isAdmin,
-    isUser,
-  };
+  return useMemo(
+    () => ({
+      user,
+      hasRole,
+      isAdmin,
+      isUser,
+    }),
+    [user, hasRole, isAdmin, isUser],
+  );
 };

@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_SIZE } from '@/constants/page';
 import { isValidUserRole, isValidGender } from '@/libs/type-guards';
 import type { UserListResponseDto, UserRole, Gender } from '@/types/user';
 
-type UserSearchFormData = {
+export type UserSearchFormData = {
   id: string;
   search: string;
   role: UserRole | '';
@@ -37,14 +37,20 @@ export const useUserList = () => {
 
   const searchKey = useMemo(() => {
     const params = getSearchParamsFromUrl();
+    // 検索条件がある場合は /users/search/detail を使用
+    const hasSearchParams =
+      params.id || params.search || params.role || params.gender;
+    const endpoint = hasSearchParams ? '/users/search/detail' : '/users';
     return buildSWRKey(
-      '/users',
-      {
-        id: params.id,
-        search: params.search,
-        role: params.role,
-        gender: params.gender,
-      },
+      endpoint,
+      hasSearchParams
+        ? {
+            id: params.id,
+            search: params.search,
+            role: params.role,
+            gender: params.gender,
+          }
+        : undefined,
       {
         page: params.page,
         pageSize: DEFAULT_PAGE_SIZE,

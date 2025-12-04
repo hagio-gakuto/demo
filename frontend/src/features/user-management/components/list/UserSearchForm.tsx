@@ -34,12 +34,8 @@ export const UserSearchForm = ({
   });
 
   const handleReset = () => {
-    methods.reset({
-      id: '',
-      search: '',
-      role: '',
-      gender: '',
-    });
+    // フォーム側の見た目をリセットする必要はありません（再マウントされるので）
+    // URLをリセットする処理だけ呼ぶ
     onReset();
   };
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Title, PageContainer } from '@/components/ui';
@@ -15,25 +16,37 @@ type CategorySection = {
 export const Dashboard = () => {
   const { hasRole } = useAuth();
 
-  const userLinks = navigationLinks.filter(
-    (link) => link.requiredRole === 'user' && hasRole(link.requiredRole),
+  const userLinks = useMemo(
+    () =>
+      navigationLinks.filter(
+        (link) => link.requiredRole === 'user' && hasRole(link.requiredRole),
+      ),
+    [hasRole],
   );
-  const adminLinks = navigationLinks.filter(
-    (link) => link.requiredRole === 'admin' && hasRole(link.requiredRole),
+  const adminLinks = useMemo(
+    () =>
+      navigationLinks.filter(
+        (link) => link.requiredRole === 'admin' && hasRole(link.requiredRole),
+      ),
+    [hasRole],
   );
 
-  const categorySections: CategorySection[] = [
-    {
-      title: roleCategoryMap.user.title,
-      requiredRole: 'user' as UserRole,
-      links: userLinks,
-    },
-    {
-      title: roleCategoryMap.admin.title,
-      requiredRole: 'admin' as UserRole,
-      links: adminLinks,
-    },
-  ].filter((section) => section.links.length > 0);
+  const categorySections: CategorySection[] = useMemo(
+    () =>
+      [
+        {
+          title: roleCategoryMap.user.title,
+          requiredRole: 'user' as UserRole,
+          links: userLinks,
+        },
+        {
+          title: roleCategoryMap.admin.title,
+          requiredRole: 'admin' as UserRole,
+          links: adminLinks,
+        },
+      ].filter((section) => section.links.length > 0),
+    [userLinks, adminLinks],
+  );
 
   return (
     <PageContainer>

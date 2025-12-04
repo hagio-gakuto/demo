@@ -40,6 +40,10 @@ export const useUserCsvExport = ({ searchParams }: UseUserCsvExportParams) => {
         `/users/export?${params.toString()}`,
       );
 
+      if (!exportUsers || exportUsers.length === 0) {
+        throw new Error('出力するデータがありません');
+      }
+
       const csvData = exportUsers.map((user) => ({
         ID: user.id,
         メールアドレス: user.email,
