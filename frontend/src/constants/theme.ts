@@ -1,5 +1,5 @@
 export const themeColors = {
-  primary: '#6B7280', // グレー
+  primary: '#ffb6c1', // ピンク
   secondary: '#43A047', // グリーン
   accent: '#FB8C00', // オレンジ
   background: '#ffffff',
