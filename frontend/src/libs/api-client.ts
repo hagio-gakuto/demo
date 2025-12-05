@@ -40,10 +40,18 @@ export const apiClient = async <T>(
 ): Promise<T> => {
   const { method = 'GET', headers = {}, body, cache } = options;
 
+  // 開発用: 認証ヘッダーを追加
+  // TODO: 実際の認証機能を実装したら、トークンから取得する
+  const authHeaders: Record<string, string> = {
+    Authorization: 'Bearer dev-token',
+    'x-user-id': process.env.NEXT_PUBLIC_DEV_USER_ID || 'system',
+  };
+
   const config: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders,
       ...headers,
     },
     cache,

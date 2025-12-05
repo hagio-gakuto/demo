@@ -6,7 +6,6 @@ import { Breadcrumb } from './Breadcrumb';
 import { HamburgerMenu } from './HamburgerMenu';
 import { NavigationMenu } from './NavigationMenu';
 import { HeaderLogo } from './HeaderLogo';
-import { HeaderDateAndRcdx } from './HeaderDateAndRcdx';
 import { UserProfile } from './UserProfile';
 
 export const Header = () => {
@@ -28,7 +27,6 @@ export const Header = () => {
             <div className="flex items-center gap-4">
               <HamburgerMenu />
               <HeaderLogo />
-              <HeaderDateAndRcdx />
             </div>
 
             <div className="flex items-center gap-6">

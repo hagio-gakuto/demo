@@ -6,7 +6,7 @@ alwaysApply: true
 
 description:
 globs: frontend/\*\*
-alwaysApply: false
+alwaysApply: true
 
 ---
 

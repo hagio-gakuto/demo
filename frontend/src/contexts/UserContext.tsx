@@ -12,9 +12,11 @@ type UserContextType = {
 
 type MeResponse = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: User['role'];
+  imageUrl?: string;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,19 +31,26 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchMe = async () => {
       try {
         const me = await apiClient<MeResponse>('/me');
-        if (!isMounted || !me) return;
+        if (!isMounted || !me) {
+          setIsLoading(false);
+          return;
+        }
         setUser({
           id: me.id,
-          name: me.name,
+          name: `${me.lastName} ${me.firstName}`,
           email: me.email,
           role: me.role,
+          imageUrl: me.imageUrl,
         });
       } catch {
-        if (!isMounted) return;
+        if (!isMounted) {
+          return;
+        }
         setUser(null);
       } finally {
-        if (!isMounted) return;
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 

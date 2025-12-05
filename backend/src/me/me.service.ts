@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../config/custom-logger.service';
 import type { MeResponseDto } from './dto/me-response.dto';
 import { PrismaUserMapper } from '../users/infrastructure/persistence/prisma-user.mapper';
-import { NotFoundError } from '../common/errors/not-found.error';
-import { handlePrismaError } from '../common/utils/prisma-error-handler';
+import { SYSTEM_USER_ID } from '../common/constants/system';
 
 @Injectable()
 export class MeService {
@@ -13,14 +12,27 @@ export class MeService {
     private readonly logger: CustomLoggerService,
   ) {}
 
-  async getMe(userId: string): Promise<MeResponseDto> {
+  async getMe(_userId: string): Promise<MeResponseDto> {
+    // 開発用: 固定ユーザー（system）を返す（ログインしているように見せかける）
     try {
       const user = await this.prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: SYSTEM_USER_ID },
       });
 
       if (!user) {
-        throw new NotFoundError('ユーザー', userId);
+        this.logger.warn(
+          `開発用ユーザー（${SYSTEM_USER_ID}）が見つかりません`,
+          'MeService',
+        );
+        // フォールバック: 最初のユーザーを取得
+        const firstUser = await this.prisma.user.findFirst({
+          orderBy: { createdAt: 'asc' },
+        });
+        if (!firstUser) {
+          throw new Error('ユーザーが見つかりません');
+        }
+        const entity = PrismaUserMapper.toEntity(firstUser);
+        return entity.toPrimitives();
       }
 
       const entity = PrismaUserMapper.toEntity(user);
@@ -31,10 +43,6 @@ export class MeService {
         undefined,
         'MeService',
       );
-      handlePrismaError(error, {
-        resourceName: 'ユーザー',
-        id: userId,
-      });
       throw error;
     }
   }

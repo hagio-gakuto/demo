@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import type { Gender, UserRole } from '@prisma/client';
 import { UsersRepository } from '../infrastructure/users.repository';
 import type { UserResponseDto } from '../dto/user-response.dto';
-import { NotFoundError } from '../../common/errors/not-found.error';
 import { handlePrismaError } from '../../common/utils/prisma-error-handler';
 import { CustomLoggerService } from '../../config/custom-logger.service';
+import { validateUserExists } from '../utils/user-validator.utils';
 
 type UpdateUserParams = {
   id: string;
@@ -24,10 +24,10 @@ export class UpdateUserUseCase {
   ) {}
 
   async execute(params: UpdateUserParams): Promise<UserResponseDto> {
-    const existing = await this.usersRepository.findById(params.id);
-    if (!existing || existing.deletedAt) {
-      throw new NotFoundError('ユーザー', params.id);
-    }
+    const existing = validateUserExists(
+      await this.usersRepository.findById(params.id),
+      params.id,
+    );
 
     existing.changeEmail(params.email, params.userId);
     existing.changeRole(params.role, params.userId);

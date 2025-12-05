@@ -6,7 +6,7 @@ alwaysApply: true
 
 description: "backend/配下の実装をする前に必ず読むべき内容"
 globs: backend/\*\*
-alwaysApply: false
+alwaysApply: true
 
 ---
 
@@ -15,141 +15,133 @@ alwaysApply: false
 
 # 概要
 
-このプロジェクトのバックエンドは、**Nest.js** フレームワークを使用し、**DDD（ドメイン駆動開発）** と **CQRS（Command Query Responsibility Segregation）** を組み合わせたアーキテクチャを採用しています。
+このプロジェクトのバックエンドは、**Nest.js** フレームワークを使用し、**DDD（ドメイン駆動開発）** と **Use Case パターン** を組み合わせたアーキテクチャを採用しています。
 
-## CQRS アーキテクチャ
+## アーキテクチャの特徴
 
-このプロジェクトでは、**Event Sourcing** ではなく **State Sourcing** に CQRS を組み込んでいます。これにより、**Command（書き込み）** 側と **Query（読み取り）** 側で同じデータベースを参照します。
-
-この構成を採用する主な理由は、Command 側で DDD を用いると、データ取得処理（`Get`）が複雑になりがちだからです。そのため、以下のように役割を分けています。
-
-- **Command 側**: DDD を用いて、データの書き込み・更新・削除ロジックを扱います。
-- **Query 側**: **Port-Adapter パターン** に基づき、Prisma を直接使用して読み取り処理を最適化します。
-
-Command と Query はデータベースを共有しますが、それ以外の機能（ユーティリティ関数など）は共有しません。
+- **機能ごとのモジュール分割**: 各機能（users, search-conditions など）は独立したモジュールとして実装される
+- **Use Case パターン**: 各操作（create, update, delete, find, search）は独立したUse Caseクラスとして実装される
+- **DDD（ドメイン駆動開発）**: ドメインモデル（Entity、Value Object）を中心とした設計
+- **リポジトリパターン**: データアクセスはリポジトリインターフェースを通じて行う
+- **依存性逆転の原則**: Use Caseはリポジトリインターフェースに依存し、実装はinfrastructure層に配置
 
 ## ディレクトリ構成
 
-`src` ディレクトリ配下は、役割に応じて分割されています。
+`src` ディレクトリ配下は、機能ごとにモジュールを分割しています。
 
 ```
 ├── src
-│   ├── command   # 書き込み・更新・削除処理
-│   │   ├── application  # アプリケーションサービス層
-│   │   ├── controller   # コントローラー層
-│   │   ├── domain       # ドメイン層（リポジトリインターフェースなど）
-│   │   ├── dto          # DTO（データ転送オブジェクト）定義
-│   │   ├── infra        # インフラストラクチャ層（リポジトリ実装など）
-│   │   ├── constants    # 定数定義（イベントタイプ、インジェクショントークンなど）
-│   │   └── types        # 型定義
-│   ├── query     # 読み取り専用API処理
-│   │   ├── application  # アプリケーションサービス層
-│   │   ├── controller   # コントローラー層
-│   │   ├── dao          # DAO（データアクセスオブジェクト）層
-│   │   ├── dto          # DTO定義
-│   │   └── types        # 型定義
-│   ├── modules   # モジュール定義（Nest.jsモジュール）
-│   │             # - すべてのモジュールは必ずこのフォルダに配置する
-│   │             # - controller配下にはモジュールを配置しない
-│   │             # - Query/Commandごとにモジュールを分離
-│   │             # - 統合モジュールでQuery/Commandをまとめる
-│   │             # - 例: modules/company/company-query.module.ts, modules/company/company-command.module.ts, modules/company/company.module.ts
-│   ├── common    # 共通処理
-│   │   ├── errors       # エラー定義
-│   │   ├── filters      # フィルター（グローバル例外フィルターなど）
-│   │   ├── middleware   # ミドルウェア
-│   │   └── pipes        # パイプ（バリデーションパイプなど）
-│   └── config    # 設定（ロガーなど）
+│   ├── app.module.ts          # ルートモジュール
+│   ├── main.ts                # エントリポイント
+│   ├── prisma/                # Prisma設定
+│   │   ├── prisma.module.ts   # PrismaServiceを提供するグローバルモジュール
+│   │   └── prisma.service.ts  # PrismaClientラッパー
+│   ├── config/                # 設定
+│   │   ├── logger.module.ts   # ロガーモジュール
+│   │   └── custom-logger.service.ts  # カスタムロガーサービス
+│   ├── common/                # 共通処理
+│   │   ├── constants/         # 定数定義
+│   │   ├── decorators/        # デコレータ（@CurrentUserなど）
+│   │   ├── enums/             # 列挙型定義
+│   │   ├── errors/            # エラー定義
+│   │   ├── filters/           # フィルター（グローバル例外フィルターなど）
+│   │   ├── interceptors/      # インターセプター（ロギングなど）
+│   │   ├── middleware/        # ミドルウェア（認証など）
+│   │   ├── pipes/             # パイプ（バリデーションパイプなど）
+│   │   ├── services/          # 共通サービス（トレースサービスなど）
+│   │   └── utils/             # ユーティリティ（日付、文字列など）
+│   └── {feature-name}/        # 機能ごとのモジュール（例: users, search-conditions）
+│       ├── {feature-name}.controller.ts  # コントローラー
+│       ├── {feature-name}.module.ts      # モジュール定義
+│       ├── domain/            # ドメイン層
+│       │   └── {feature-name}.repository.interface.ts  # リポジトリインターフェース
+│       ├── dto/               # DTO（データ転送オブジェクト）定義
+│       │   ├── {機能}-request.dto.ts     # リクエストDTO
+│       │   └── {機能}-response.dto.ts    # レスポンスDTO
+│       ├── entities/          # エンティティ（ドメインモデル）
+│       │   └── {feature-name}.entity.ts
+│       ├── infrastructure/     # インフラストラクチャ層
+│       │   ├── {feature-name}.repository.ts  # リポジトリ実装
+│       │   └── persistence/  # 永続化関連
+│       │       ├── prisma-{feature-name}.mapper.ts  # Prismaマッパー
+│       │       └── prisma-{feature-name}-filter.builder.ts  # フィルタービルダー
+│       ├── use-cases/         # ユースケース（アプリケーションサービス層）
+│       │   ├── create-{feature-name}.use-case.ts
+│       │   ├── update-{feature-name}.use-case.ts
+│       │   ├── delete-{feature-name}.use-case.ts
+│       │   ├── find-{feature-name}.use-case.ts
+│       │   └── search-{feature-name}s.use-case.ts
+│       └── value-objects/     # 値オブジェクト（オプション）
+│           └── {value-object-name}.vo.ts
 ```
 
 ## 依存関係
 
 各層の依存関係は以下の通りです。
 
-- **Command**: `controller` -\> `application` -\> `domain` \<- `infra`
-- **Query**: `controller` -\> `application` \<- `dao`
+- **Controller** → **Use Case** → **Domain (Repository Interface)** ← **Infrastructure (Repository Implementation)**
+- コントローラーはユースケースを呼び出し、ユースケースはリポジトリインターフェースに依存し、リポジトリ実装がインターフェースを実装する
 
 ## モジュール構成
 
 ### モジュール配置の原則
 
-- **すべてのモジュールは必ず `modules/` フォルダに配置する**
-- **`controller/` 配下や `application/` 配下にはモジュールを配置してはいけない**
-- モジュールは機能ごとに `modules/{feature-name}/` 配下にまとめる
-
-### Query/Command 分離
-
-- **Query 側と Command 側でモジュールを分離する**
-- `modules/{feature-name}/`配下に以下のファイルを作成する
-  - `{feature-name}-query.module.ts`: Query 側のモジュール
-  - `{feature-name}-command.module.ts`: Command 側のモジュール
-  - `{feature-name}.module.ts`: 統合モジュール（Query/Command をまとめる）
+- **各機能は`src/{feature-name}/`配下に独立したモジュールとして配置する**
+- **モジュールファイル（`{feature-name}.module.ts`）は機能ディレクトリのルートに配置する**
+- **コントローラーファイル（`{feature-name}.controller.ts`）も機能ディレクトリのルートに配置する**
 
 ### モジュールの配置例
 
 ```
-modules/
-  └── company/
-      ├── company-query.module.ts      # Query側のモジュール（controller、service、daoを定義）
-      ├── company-command.module.ts    # Command側のモジュール（controller、service、repositoryを定義）
-      └── company.module.ts            # 統合モジュール（Query/Commandをまとめる）
+src/
+  └── users/
+      ├── users.controller.ts      # コントローラー
+      ├── users.module.ts          # モジュール定義
+      ├── domain/
+      ├── dto/
+      ├── entities/
+      ├── infrastructure/
+      ├── use-cases/
+      └── value-objects/
 ```
 
 ```ts
-// modules/company/company-query.module.ts
-// Query側のモジュール（query/controller、query/application、query/daoを定義）
+// src/users/users.module.ts
 @Module({
-  controllers: [CompanyController], // query/controller/company/company.controller.ts
+  controllers: [UsersController],
   providers: [
-    CompanyService, // query/application/company/company.service.ts
-    CompanyDao, // query/dao/company/company.dao.ts
-    // PrismaServiceはPrismaModuleから提供されるため、providersには書かない
-  ],
-  exports: [CompanyDao], // Command側で使用するためにexport
-})
-export class CompanyQueryModule {}
-
-// modules/company/company-command.module.ts
-// Command側のモジュール（command/controller、command/application、command/infraを定義）
-@Module({
-  imports: [CompanyQueryModule], // Query側のDAOを使用するためにimport
-  controllers: [CompanyController], // command/controller/company/company.controller.ts
-  providers: [
-    CompanyService, // command/application/company/company.service.ts
-    {
-      provide: INJECTION_TOKENS.ICompanyRepository,
-      useClass: CompanyRepository, // command/infra/company/company.repository.ts
-    },
-    CompanyRepository,
-    // CompanyDao は CompanyQueryModule から解決されるため providers には書かない
+    UsersRepository, // リポジトリ実装
+    FindAllUsersUseCase,
+    FindUserUseCase,
+    CreateUserUseCase,
+    UpdateUserUseCase,
+    DeleteUserUseCase,
+    SearchUsersUseCase,
+    ExportUsersUseCase,
     // PrismaServiceはPrismaModuleから提供されるため、providersには書かない
   ],
 })
-export class CompanyCommandModule {}
-
-// modules/company/company.module.ts
-// 統合モジュール（Query/Commandをまとめる）
-@Module({
-  imports: [CompanyQueryModule, CompanyCommandModule],
-})
-export class CompanyModule {}
+export class UsersModule {}
 ```
 
 ### AppModule での使用
 
-- **AppModule では統合モジュールのみをインポートする**
-- Query/Command の個別モジュールは直接インポートしない
+- **AppModule では各機能モジュールを直接インポートする**
 - **`PrismaModule`はグローバルモジュールとして`AppModule`でインポートする**
 
 ```ts
 // app.module.ts
 @Module({
   imports: [
+    LoggerModule,
     PrismaModule, // グローバルモジュールとしてインポート（全モジュールでPrismaServiceが利用可能になる）
-    RecruitYearModule, // 統合モジュールのみ
+    UsersModule,
+    SearchConditionsModule,
+    MeModule,
     // ...
   ],
-  providers: [], // PrismaServiceはPrismaModuleに任せるので空でOK
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
 ```
@@ -253,59 +245,73 @@ function someServiceFunction(){
   - `upsert`は楽観的ロックが使えないため使用しない
   - Query 側の DAO を使って存在確認を行い、存在する場合は`update`、存在しない場合は`create`を実行する
   - try-catch はなるべく使わない
-- **infra 層はインターフェースにする**
-  - リポジトリは`domain/`配下にインターフェースを定義し、`infra/`で実装する
-  - アプリケーション層はインターフェースに依存する
+- **infrastructure 層はインターフェースにする**
+  - リポジトリは`domain/`配下にインターフェースを定義し、`infrastructure/`で実装する
+  - アプリケーション層（Use Case）はインターフェースに依存する
 - **リポジトリの引数は Entity にする**
   - リポジトリインターフェースのメソッド引数は、個別のプロパティではなく Entity オブジェクトを受け取る
-  - Entity は`domain/{feature-name}/`配下に定義する
-  - 例: `create(company: CompanyEntity): Promise<CompanyEntity>`
+  - Entity は`entities/`配下に定義する
+  - 例: `create(user: UserEntity): Promise<UserEntity>`
 - **リポジトリの戻り値はドメインエンティティにする**
-  - リポジトリのメソッドは Prisma の型（例: `SearchCondition`）ではなく、ドメインエンティティ（例: `SearchConditionEntity`）を返す
-  - Prisma から取得したデータは、Mapper クラスの`toDomain`メソッドを使用してドメインエンティティに変換する
+  - リポジトリのメソッドは Prisma の型（例: `User`）ではなく、ドメインエンティティ（例: `UserEntity`）を返す
+  - Prisma から取得したデータは、Mapper クラスの`toEntity`メソッドを使用してドメインエンティティに変換する
   - 例:
     ```ts
-    async create(entity: SearchConditionEntity): Promise<SearchConditionEntity> {
-      const data = await this.prisma.searchCondition.create({
-        data: SearchConditionMapper.toPersistence(entity),
-      });
-      return SearchConditionMapper.toDomain(data);
+    async create(entity: UserEntity): Promise<UserEntity> {
+      const data = PrismaUserMapper.toPrismaInput(entity);
+      const created = await this.prisma.user.create({ data });
+      return PrismaUserMapper.toEntity(created);
     }
     ```
 - **Mapper クラスの実装**
-  - Mapper クラスは`domain/{feature-name}/`配下に定義する
+  - Mapper クラスは`infrastructure/persistence/`配下に定義する
+  - クラス名は`Prisma{FeatureName}Mapper`とする（例: `PrismaUserMapper`）
   - Mapper クラスには以下のメソッドを実装する
-    - `toDomain(data: PrismaType): Entity`: Prisma の型からドメインエンティティに変換
-    - `toPersistence(entity: Entity): {...}`: ドメインエンティティから Prisma の保存用データ形式に変換（`id`、`createdAt`、`updatedAt`は含めない）
-    - `toUpdatePersistence(entity: Entity): {...}`: ドメインエンティティから Prisma の更新用データ形式に変換（`id`、`createdAt`は含めない、`updatedAt`は Prisma の`@updatedAt`で自動管理されるため含めない）
-  - `toPersistence`と`toUpdatePersistence`の戻り値の型は、`Omit`や`Partial`を使わず、明示的な型定義を使用する
+    - `toEntity(data: PrismaType): Entity`: Prisma の型からドメインエンティティに変換
+    - `toPrismaInput(entity: Entity): Prisma.UserUncheckedCreateInput`: ドメインエンティティから Prisma の保存用データ形式に変換（`id`、`createdAt`、`updatedAt`は含めない）
+  - `toPrismaInput`の戻り値の型は、`Omit`や`Partial`を使わず、明示的な型定義（`Prisma.UserUncheckedCreateInput`など）を使用する
   - 例:
     ```ts
-    static toPersistence(entity: SearchConditionEntity): {
-      formType: string;
-      name: string;
-      urlParams: string;
-      recruitYearId: number | null;
-      createdBy: string;
-      updatedBy: string;
-    } {
+    static toPrismaInput(entity: UserEntity): Prisma.UserUncheckedCreateInput {
+      const p = entity.toPrimitives();
       return {
-        formType: entity.formType,
-        name: entity.name,
-        urlParams: entity.urlParams,
-        recruitYearId: entity.recruitYearId,
-        createdBy: entity.createdBy,
-        updatedBy: entity.updatedBy,
+        id: p.id,
+        email: p.email,
+        role: p.role,
+        firstName: p.firstName,
+        lastName: p.lastName,
+        gender: p.gender,
+        createdBy: p.createdBy,
+        updatedBy: p.updatedBy,
+        deletedAt: p.deletedAt ?? null,
+        deletedBy: p.deletedBy ?? null,
       };
     }
     ```
-- **command 側に`findOne`などの読み取りメソッドを定義しない**
-  - 読み取り処理は Query 側の DAO に定義する
-  - command 側の service で Query 側の DAO を注入して使用する
+- **Use Case パターンの実装**
+  - 各操作（create, update, delete, find, search）は`use-cases/`配下に独立したUse Caseクラスとして実装する
+  - Use Caseクラス名は`{操作}{FeatureName}UseCase`とする（例: `CreateUserUseCase`, `SearchUsersUseCase`）
+  - Use Caseは`@Injectable()`デコレータを付与し、リポジトリをコンストラクタで注入する
+  - 例:
+
+    ```ts
+    @Injectable()
+    export class CreateUserUseCase {
+      constructor(
+        private readonly usersRepository: UsersRepository,
+        private readonly logger: CustomLoggerService,
+      ) {}
+
+      async execute(params: CreateUserParams): Promise<UserResponseDto> {
+        // ビジネスロジック
+      }
+    }
+    ```
+
 - **イベントタイプは定数で管理する**
-  - `command/constants/event-types.ts`に定数として定義する
+  - イベントタイプが必要な場合は`{feature-name}/constants/event-types.ts`に定数として定義する
   - 文字列リテラルを直接使用しない
-- 外部サービスと連携しているテーブル（例: `AtsysApplicant` テーブル, `ApplicantSelectionProcess` テーブル）は、\*\*`command` 配下で直接更新してはいけない
+- 外部サービスと連携しているテーブルは、直接更新してはいけない
   - 外部サービスから連携されているか否かは Prisma のコメントアウトを確認
 - 外部連携はコントローラー層、サービス層、リポジトリ層で別ファイルで定義すること
   - ドメイン層で定義しているインターフェースも別で定義する
@@ -405,38 +411,40 @@ function someServiceFunction(){
     - infra 層を利用する場合は、アプリケーションサービスに記載する
     - **どこにも依存していないか？**を基準に考える
 
-## Query
+## Query（読み取り処理）
 
-- 原則「読み取り専用」。DAO 層での書き込み操作（create/update/delete/upsert/raw-insert 等）は禁止
+- 原則「読み取り専用」。リポジトリ層での書き込み操作（create/update/delete/upsert/raw-insert 等）は禁止
 - 複雑な集計・フィルタは DB 側（Prisma/SQL）で完結させる（アプリ側で全件ロードしない）
-- **DTO 変換は DTO クラス内に変換メソッドを作成する**
-  - DTO への変換処理は、DTO クラス内に静的メソッド（`static`）として定義する
-  - Command 側のエンティティから DTO を作成する場合は`fromEntity`メソッドを使用
-  - Query 側の DAO から取得した Prisma データから DTO を作成する場合は`fromQuery`メソッドを使用
+- **読み取り処理もUse Caseパターンで実装する**
+  - 検索や取得処理も`use-cases/`配下に独立したUse Caseクラスとして実装する
+  - 例: `FindUserUseCase`, `SearchUsersUseCase`, `FindAllUsersUseCase`
+- **DTO 変換は Entity の`toPrimitives()`メソッドを使用する**
+  - Entity には`toPrimitives()`メソッドを実装し、DTO形式のデータを返す
+  - Use Caseでは`entity.toPrimitives()`を呼び出してDTOに変換する
   - 例:
 
     ```ts
-    export class SearchConditionResponseDto {
-      // ...
-
-      /**
-       * Command側のエンティティからDTOを作成
-       */
-      static fromEntity(
-        searchCondition: SearchConditionEntity,
-      ): SearchConditionResponseDto {
-        // ...
-      }
-
-      /**
-       * Query側のDAOから取得したデータからDTOを作成
-       */
-      static fromQuery(
-        searchCondition: SearchCondition,
-      ): SearchConditionResponseDto {
-        // ...
-      }
+    // Entity内
+    toPrimitives(): UserResponseDto {
+      return {
+        id: this.props.id,
+        email: this.email,
+        role: this.role,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        gender: this.gender,
+        createdAt: this.props.createdAt,
+        createdBy: this.props.createdBy,
+        updatedAt: this.props.updatedAt,
+        updatedBy: this.props.updatedBy,
+        deletedAt: this.props.deletedAt,
+        deletedBy: this.props.deletedBy,
+      };
     }
+
+    // Use Case内
+    const entities = await this.usersRepository.findAll(filter);
+    return entities.map((user) => user.toPrimitives());
     ```
 
 - **`recruit_year_id`を持つテーブルの検索条件には、必ずフロントから渡される`recruitYearId`を含める**
@@ -465,6 +473,46 @@ function someServiceFunction(){
   - リクエスト用: `{機能}RequestDto` または `{機能}RequestSchema`
   - レスポンス用: `{機能}ResponseDto`
   - 例: `UpdateRecruitYearRequestDto`, `RecruitYearResponseDto`
+  - **DTOファイル名もRequest/Responseを含める**
+    - リクエスト用: `{機能}-request.dto.ts`
+    - レスポンス用: `{機能}-response.dto.ts`
+    - 例: `create-user-request.dto.ts`, `user-response.dto.ts`
+
+- **ページネーションクエリパラメータは共通DTOスキーマを使用する**
+  - ページネーションが必要なエンドポイントでは、`paginationQuerySchema`という共通のDTOスキーマを使用する
+  - 複数のスキーマをマージする場合は`.merge()`を使用する
+  - 例:
+    ```ts
+    @Get('search/detail')
+    async search(
+      @Query(
+        new ZodValidationPipe(
+          searchUserRequestSchema.merge(paginationQuerySchema),
+        ),
+      )
+      query: SearchUserRequestDto & PaginationQueryDto,
+    ): Promise<UserListResponseDto> {
+      // ...
+    }
+    ```
+
+- **ユーザーIDの取得は`@CurrentUser()`デコレータを使用する**
+  - コントローラー層で`@CurrentUser()`デコレータを使用してユーザーIDを取得する
+  - `create`、`update`、`delete`操作では、必ず`userId`をuse-caseに渡す
+  - 例:
+    ```ts
+    @Post()
+    async create(
+      @CurrentUser() userId: string,
+      @Body(new ZodValidationPipe(createUserRequestSchema))
+      dto: CreateUserRequestDto,
+    ): Promise<UserResponseDto> {
+      return this.createUserUseCase.execute({
+        // ...
+        userId,
+      });
+    }
+    ```
 
 - **バリデーションは DTO 内で自動実行する**
   - コントローラー層で手動バリデーションを行わない
