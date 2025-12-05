@@ -12,16 +12,17 @@ export class MeService {
     private readonly logger: CustomLoggerService,
   ) {}
 
-  async getMe(_userId: string): Promise<MeResponseDto> {
+  async getMe(userId: string): Promise<MeResponseDto> {
     // 開発用: 固定ユーザー（system）を返す（ログインしているように見せかける）
+    userId = SYSTEM_USER_ID;
     try {
       const user = await this.prisma.user.findUnique({
-        where: { id: SYSTEM_USER_ID },
+        where: { id: userId },
       });
 
       if (!user) {
         this.logger.warn(
-          `開発用ユーザー（${SYSTEM_USER_ID}）が見つかりません`,
+          `開発用ユーザー（${userId}）が見つかりません`,
           'MeService',
         );
         // フォールバック: 最初のユーザーを取得
