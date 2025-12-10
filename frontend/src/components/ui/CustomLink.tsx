@@ -31,7 +31,7 @@ export const CustomLink = ({
   const baseStyles =
     'text-blue-300 hover:text-blue-100 underline transition-colors';
   const visitedStyles = isVisited
-    ? 'visited:text-purple-300 visited:hover:text-purple-100'
+    ? 'visited:text-purple-600 visited:hover:text-purple-400'
     : '';
 
   return (
