@@ -55,7 +55,7 @@ export const UserProfile = () => {
           </div>
         )}
       </div>
-      <span className="text-sm font-medium text-white">{user.name}</span>
+      <span className="text-sm font-medium">{user.name}</span>
     </CustomLink>
   );
 };
