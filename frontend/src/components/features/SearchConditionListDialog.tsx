@@ -204,6 +204,7 @@ export const SearchConditionListDialog = ({
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <TextField
+                  control={methods.control}
                   name="name"
                   label="名前で検索"
                   placeholder="検索条件の名前を入力"

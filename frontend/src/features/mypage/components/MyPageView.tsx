@@ -21,7 +21,9 @@ export const MyPageView = ({ user }: MyPageViewProps) => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             名前
           </label>
-          <p className="text-sm text-gray-900">{user.lastName} {user.firstName}</p>
+          <p className="text-sm text-gray-900">
+            {user.lastName} {user.firstName}
+          </p>
         </div>
 
         <div>
@@ -39,7 +41,11 @@ export const MyPageView = ({ user }: MyPageViewProps) => {
               性別
             </label>
             <p className="text-sm text-gray-900">
-              {user.gender === 'male' ? '男性' : user.gender === 'female' ? '女性' : 'その他'}
+              {user.gender === 'male'
+                ? '男性'
+                : user.gender === 'female'
+                  ? '女性'
+                  : 'その他'}
             </p>
           </div>
         )}
@@ -47,4 +53,3 @@ export const MyPageView = ({ user }: MyPageViewProps) => {
     </div>
   );
 };
-

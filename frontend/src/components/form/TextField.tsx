@@ -3,6 +3,7 @@
 import { useId } from 'react';
 import {
   Controller,
+  useFormContext,
   type Control,
   type FieldValues,
   type FieldPath,
@@ -11,7 +12,7 @@ import {
 import { Input } from '../ui';
 
 type TextFieldProps<T extends FieldValues> = {
-  control: Control<T>;
+  control?: Control<T>;
   name: FieldPath<T>;
   label?: string;
   rules?: RegisterOptions<T>;
@@ -21,7 +22,7 @@ type TextFieldProps<T extends FieldValues> = {
 };
 
 export const TextField = <T extends FieldValues>({
-  control,
+  control: controlProp,
   name,
   label,
   rules,
@@ -29,6 +30,8 @@ export const TextField = <T extends FieldValues>({
   type = 'text',
   className,
 }: TextFieldProps<T>) => {
+  const formContext = useFormContext<T>();
+  const control = controlProp ?? formContext.control;
   const id = useId();
 
   // 必須項目かどうかを判定（rulesにrequiredがある場合）

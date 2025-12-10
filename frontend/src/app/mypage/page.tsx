@@ -10,13 +10,9 @@ export default function MyPage() {
   usePageTitle('マイページ');
 
   useEffect(() => {
-    setItems([
-      { label: 'ホーム', href: '/' },
-      { label: 'マイページ' },
-    ]);
+    setItems([{ label: 'ホーム', href: '/' }, { label: 'マイページ' }]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <MyPageContent />;
 }
-

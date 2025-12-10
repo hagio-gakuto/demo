@@ -65,7 +65,6 @@ export const BulkOperationDialog = ({
       }
     >
       <div className="space-y-6">
-
         <div className="space-y-4">
           {/* 一括登録セクション */}
           <div className="p-5 bg-blue-50 rounded-lg border-2 border-blue-200">

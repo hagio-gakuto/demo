@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { useSWRData } from '@/libs/swr-client';
-import { Title, PageContainer, Loading, Button, EditIcon } from '@/components/ui';
+import {
+  Title,
+  PageContainer,
+  Loading,
+  Button,
+  EditIcon,
+} from '@/components/ui';
 import { MyPageForm } from './MyPageForm';
 import { MyPageView } from './MyPageView';
 import type { UserResponseDto } from '@/types/user';
@@ -25,7 +31,9 @@ export const MyPageContent = () => {
       <PageContainer>
         <Title>マイページ</Title>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-center text-gray-500">ユーザー情報を取得できませんでした</p>
+          <p className="text-center text-gray-500">
+            ユーザー情報を取得できませんでした
+          </p>
         </div>
       </PageContainer>
     );
@@ -58,4 +66,3 @@ export const MyPageContent = () => {
     </PageContainer>
   );
 };
-
