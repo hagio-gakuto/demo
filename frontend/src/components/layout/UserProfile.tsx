@@ -31,7 +31,7 @@ export const UserProfile = () => {
   return (
     <CustomLink
       href="/mypage"
-      className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-col"
+      className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-col text-white hover:text-white"
     >
       <div
         className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden"
@@ -55,7 +55,7 @@ export const UserProfile = () => {
           </div>
         )}
       </div>
-      <span className="text-sm">{user.name}</span>
+      <span className="text-sm font-medium text-white">{user.name}</span>
     </CustomLink>
   );
 };

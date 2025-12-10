@@ -44,7 +44,7 @@ export const UserSearchForm = ({
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
       <div className="flex gap-4 items-end flex-wrap">
-        <div className="w-full md:w-80">
+        <div className="w-full sm:w-64 md:w-80">
           <TextField
             control={methods.control}
             name="id"
@@ -52,7 +52,7 @@ export const UserSearchForm = ({
             placeholder="ID（カンマ/スペース区切り可）"
           />
         </div>
-        <div className="w-80">
+        <div className="w-full sm:w-80 md:w-96">
           <TextField
             control={methods.control}
             name="search"
@@ -60,7 +60,7 @@ export const UserSearchForm = ({
             placeholder="メールアドレス、名前で検索"
           />
         </div>
-        <div className="w-40 z-10">
+        <div className="w-full sm:w-40 md:w-48 z-10">
           <SelectField
             control={methods.control}
             name="role"
@@ -68,7 +68,7 @@ export const UserSearchForm = ({
             options={roleOptions}
           />
         </div>
-        <div className="w-40">
+        <div className="w-full sm:w-40 md:w-48">
           <SelectField
             control={methods.control}
             name="gender"
@@ -76,17 +76,24 @@ export const UserSearchForm = ({
             options={genderOptions}
           />
         </div>
-        <Button type="submit" icon={<SearchIcon />}>
-          検索
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleReset}
-          icon={<ResetIcon />}
-        >
-          リセット
-        </Button>
+        <div className="w-full sm:w-auto flex gap-2">
+          <Button
+            type="submit"
+            icon={<SearchIcon />}
+            className="flex-1 sm:flex-none"
+          >
+            検索
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleReset}
+            icon={<ResetIcon />}
+            className="flex-1 sm:flex-none"
+          >
+            リセット
+          </Button>
+        </div>
       </div>
     </form>
   );

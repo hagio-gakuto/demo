@@ -76,13 +76,13 @@ export const UserManagement = () => {
 
   return (
     <PageContainer>
-      <div className="flex justify-between items-center">
-        <Title>ユーザー管理</Title>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <Title className="my-0">ユーザー管理</Title>
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="primary"
             onClick={() => setIsBulkDialogOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-white shadow-md"
+            className="bg-purple-600 hover:bg-purple-700 text-white shadow-md w-full sm:w-auto"
             icon={<BulkIcon />}
           >
             一括処理
@@ -90,6 +90,7 @@ export const UserManagement = () => {
           <Button
             variant="primary"
             onClick={() => setIsCreateDialogOpen(true)}
+            className="w-full sm:w-auto"
             icon={<PlusIcon />}
           >
             新規登録
